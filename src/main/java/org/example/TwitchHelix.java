@@ -2,6 +2,7 @@ package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.models.UserIdData;
+import org.example.models.VideosData;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,7 +23,7 @@ public class TwitchHelix {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.twitch.tv/helix/users?login=" + username + "&first=100"))
+                .uri(URI.create("https://api.twitch.tv/helix/users?login=" + username))
                 .GET()
                 .header("Authorization", "Bearer " + bearer.getToken())
                 .header("Client-Id", clientID)
@@ -36,6 +37,29 @@ public class TwitchHelix {
             UserIdData userIdData = objectMapper.readValue(body, UserIdData.class);
 
             return userIdData.getData()[0].getId();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public VideosData getVideosData(String userID) {
+        HttpClient client = HttpClient.newHttpClient();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.twitch.tv/helix/videos?&first=100&user_id=" + userID))
+                .GET()
+                .header("Authorization", "Bearer " + bearer.getToken())
+                .header("Client-Id", clientID)
+                .build();
+
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String body = response.body();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            return objectMapper.readValue(body, VideosData.class);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
