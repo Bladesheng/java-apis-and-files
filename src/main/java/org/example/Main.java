@@ -11,9 +11,9 @@ public class Main {
         TwitchHelix twitchHelix = new TwitchHelix(bearer, clientSecrets.getClientID());
 
         String username = "forsen";
-        String userID = twitchHelix.getUserID(username);
+        String userID = twitchHelix.fetchUserID(username);
 
-        VideosData videosData = twitchHelix.getVideosData(userID);
+        VideosData videosData = twitchHelix.fetchVideosData(userID);
 
         System.out.println(clientSecrets.getClientID());
         System.out.println(clientSecrets.getClientSecret());

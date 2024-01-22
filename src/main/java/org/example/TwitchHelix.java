@@ -19,7 +19,7 @@ public class TwitchHelix {
         this.clientID = clientId;
     }
 
-    public String getUserID(String username) {
+    public String fetchUserID(String username) {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -42,7 +42,7 @@ public class TwitchHelix {
         }
     }
 
-    public VideosData getVideosData(String userID) {
+    public VideosData fetchVideosData(String userID) {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
