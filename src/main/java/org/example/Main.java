@@ -37,7 +37,7 @@ public class Main {
             vods.add(vod);
         }
 
-        Duration avg = vods.stream()
+        Duration avgDuration = vods.stream()
                 .map(VOD::getDuration)
                 .reduce(Duration.ZERO, Duration::plus)
                 .dividedBy(vods.size());
@@ -52,7 +52,7 @@ public class Main {
         float streamsPerWeek = (((float) vods.size() / 7) / ((float) daysFirstLast / 7)) * 7;
 
         System.out.println("Number of vods: " + vods.size());
-        System.out.printf("Avg stream duration: %d hours %d minutes%n", avg.toHoursPart(), avg.toMinutesPart());
+        System.out.printf("Avg stream duration: %d hours %d minutes%n", avgDuration.toHoursPart(), avgDuration.toMinutesPart());
         System.out.println("Avg number of streams per week: " + streamsPerWeek);
 
         Map<DayOfWeek, Integer> dayOfWeekCount = new HashMap<>();
