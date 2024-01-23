@@ -4,13 +4,12 @@ import org.example.models.VideoData;
 import org.example.models.VideosData;
 
 import java.text.NumberFormat;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -55,6 +54,21 @@ public class Main {
         System.out.println("Number of vods: " + vods.size());
         System.out.printf("Avg stream duration: %d hours %d minutes%n", avg.toHoursPart(), avg.toMinutesPart());
         System.out.println("Avg number of streams per week: " + streamsPerWeek);
+
+        Map<DayOfWeek, Integer> dayOfWeekCount = new HashMap<>();
+
+        for (VOD vod : vods) {
+            DayOfWeek dayOfWeek = vod.getTime().getDayOfWeek();
+            dayOfWeekCount.put(dayOfWeek, dayOfWeekCount.getOrDefault(dayOfWeek, 0) + 1);
+        }
+
+        System.out.println("Streams per day of week:");
+        // print the counts starting with monday
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            if (dayOfWeekCount.containsKey(dayOfWeek)) {
+                System.out.println(dayOfWeek + ": " + dayOfWeekCount.get(dayOfWeek) + " streams");
+            }
+        }
 
         System.out.println("Top 3 streams:");
         for (VOD vod : vodsSortViews) {
