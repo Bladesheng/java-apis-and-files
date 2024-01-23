@@ -41,7 +41,7 @@ public class Main {
 
         LocalTime averageLocalTime = calculateAverageLocalTime(startTimes);
         LocalTime deviation = calculateStdDeviation(startTimes, averageLocalTime);
-        System.out.printf("Average stream start time: %s (deviation: %s)%n", averageLocalTime, deviation);
+        System.out.printf("Average stream start time: %sZ[UTC] (deviation: %s)%n", averageLocalTime, deviation);
 
 
         Duration avgDuration = vods.stream()
