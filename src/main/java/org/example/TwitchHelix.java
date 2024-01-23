@@ -1,6 +1,7 @@
 package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.example.models.UserIdData;
 import org.example.models.VideosData;
 
@@ -9,6 +10,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class TwitchHelix {
     private Bearer bearer;
@@ -58,8 +62,13 @@ public class TwitchHelix {
             String body = response.body();
 
             ObjectMapper objectMapper = new ObjectMapper();
+            VideosData videosData = objectMapper.readValue(body, VideosData.class);
 
-            return objectMapper.readValue(body, VideosData.class);
+            // dump the response so you can see the whole thing
+            objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+            Files.write(Paths.get("response.json"), objectMapper.writeValueAsBytes(videosData));
+
+            return videosData;
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
