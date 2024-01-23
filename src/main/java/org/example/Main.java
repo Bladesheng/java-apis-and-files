@@ -48,8 +48,13 @@ public class Main {
                 .limit(5) // top 5 streams
                 .toList();
 
-        System.out.println("Number of vods: " + videosData.getData().length);
+        // how many days between first and last stream
+        long daysFirstLast = Duration.between(vods.getLast().getTime(), vods.getFirst().getTime()).toDaysPart();
+        float streamsPerWeek = (((float) vods.size() / 7) / ((float) daysFirstLast / 7)) * 7;
+
+        System.out.println("Number of vods: " + vods.size());
         System.out.printf("Avg stream duration: %d hours %d minutes%n", avg.toHoursPart(), avg.toMinutesPart());
+        System.out.println("Avg number of streams per week: " + streamsPerWeek);
 
         System.out.println("Top 3 streams:");
         for (VOD vod : vodsSortViews) {
