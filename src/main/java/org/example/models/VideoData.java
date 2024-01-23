@@ -1,5 +1,9 @@
 package org.example.models;
 
+import java.time.Duration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class VideoData {
     private String id;
     private String stream_id;
@@ -85,5 +89,25 @@ public class VideoData {
 
     public String getMuted_segments() {
         return muted_segments;
+    }
+
+    public Duration getDurationObj() {
+        int hours = extractNumber(duration, "h");
+        int minutes = extractNumber(duration, "m");
+        int seconds = extractNumber(duration, "s");
+
+        return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds);
+    }
+
+    private int extractNumber(String input, String unit) {
+        String pattern = "(\\d+)" + unit;
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(input);
+
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        } else {
+            return 0;
+        }
     }
 }
