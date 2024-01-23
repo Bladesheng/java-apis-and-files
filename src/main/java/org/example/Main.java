@@ -22,7 +22,6 @@ public class Main {
         VideosData videosData = twitchHelix.fetchVideosData(userID);
 
         List<VOD> vods = new ArrayList<>();
-
         for (VideoData videoData : videosData.getData()) {
             DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
             ZonedDateTime time = ZonedDateTime.parse(videoData.getCreated_at(), formatter.withZone(ZoneId.of("UTC")));
@@ -34,14 +33,18 @@ public class Main {
             vods.add(vod);
         }
 
+
+        System.out.println("Number of vods: " + vods.size());
+
+
         List<LocalTime> startTimes = vods.stream()
                 .map(VOD::getTime)
                 .map(ZonedDateTime::toLocalTime)
                 .toList();
 
-        LocalTime averageLocalTime = calculateAverageLocalTime(startTimes);
-        LocalTime deviation = calculateStdDeviation(startTimes, averageLocalTime);
-        System.out.printf("Average stream start time: %sZ[UTC] (deviation: %s)%n", averageLocalTime, deviation);
+        LocalTime averageStartTime = calculateAverageLocalTime(startTimes);
+        LocalTime startTimeDeviation = calculateStdDeviation(startTimes, averageStartTime);
+        System.out.printf("Average stream start time: %sZ[UTC] (deviation: %s)%n", averageStartTime, startTimeDeviation);
 
 
         Duration avgDuration = vods.stream()
@@ -49,19 +52,15 @@ public class Main {
                 .reduce(Duration.ZERO, Duration::plus)
                 .dividedBy(vods.size());
 
-        List<VOD> vodsSortViews = vods.stream()
-                .sorted(Comparator.comparingInt(VOD::getViewCount).reversed())
-                .limit(5) // top 5 streams
-                .toList();
+        System.out.printf("Avg stream duration: %d hours %d minutes%n", avgDuration.toHoursPart(), avgDuration.toMinutesPart());
+
 
         // how many days between first and last stream
         long daysFirstLast = Duration.between(vods.getLast().getTime(), vods.getFirst().getTime()).toDaysPart();
         float streamsPerWeek = (((float) vods.size() / 7) / ((float) daysFirstLast / 7)) * 7;
-
-        System.out.println("Number of vods: " + vods.size());
-        System.out.printf("Avg stream duration: %d hours %d minutes%n", avgDuration.toHoursPart(), avgDuration.toMinutesPart());
         System.out.println("Avg number of streams per week: " + streamsPerWeek);
 
+        
         Map<DayOfWeek, Integer> dayOfWeekCount = new HashMap<>();
 
         for (VOD vod : vods) {
@@ -76,6 +75,12 @@ public class Main {
                 System.out.println(dayOfWeek + ": " + dayOfWeekCount.get(dayOfWeek) + " streams");
             }
         }
+
+
+        List<VOD> vodsSortViews = vods.stream()
+                .sorted(Comparator.comparingInt(VOD::getViewCount).reversed())
+                .limit(5) // top 5 streams
+                .toList();
 
         System.out.println("Top 3 streams:");
         for (VOD vod : vodsSortViews) {
