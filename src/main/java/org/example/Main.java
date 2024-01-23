@@ -4,10 +4,7 @@ import org.example.models.VideoData;
 import org.example.models.VideosData;
 
 import java.text.NumberFormat;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -36,6 +33,16 @@ public class Main {
 
             vods.add(vod);
         }
+
+        List<LocalTime> startTimes = vods.stream()
+                .map(VOD::getTime)
+                .map(ZonedDateTime::toLocalTime)
+                .toList();
+
+        LocalTime averageLocalTime = calculateAverageLocalTime(startTimes);
+        LocalTime deviation = calculateStdDeviation(startTimes, averageLocalTime);
+        System.out.printf("Average stream start time: %s (deviation: %s)%n", averageLocalTime, deviation);
+
 
         Duration avgDuration = vods.stream()
                 .map(VOD::getDuration)
@@ -75,5 +82,24 @@ public class Main {
             String viewCount = NumberFormat.getInstance().format(vod.getViewCount());
             System.out.printf("%s (%s views) (%s) (%s)%n", vod.getTitle(), viewCount, vod.getUrl(), vod.getTime());
         }
+    }
+
+    private static LocalTime calculateAverageLocalTime(List<LocalTime> localTimeList) {
+        int totalSeconds = localTimeList.stream()
+                .mapToInt(LocalTime::toSecondOfDay)
+                .sum();
+
+        return LocalTime.ofSecondOfDay(totalSeconds / localTimeList.size());
+    }
+
+    private static LocalTime calculateStdDeviation(List<LocalTime> localTimeList, LocalTime averageLocalTime) {
+        double sumOfSquares = localTimeList.stream()
+                .mapToDouble(time -> Math.pow(time.toSecondOfDay() - averageLocalTime.toSecondOfDay(), 2))
+                .sum();
+
+        double variance = sumOfSquares / localTimeList.size();
+        double stdDeviation = Math.sqrt(variance);
+
+        return LocalTime.ofSecondOfDay((long) stdDeviation);
     }
 }
